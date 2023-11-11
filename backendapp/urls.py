@@ -8,5 +8,7 @@ urlpatterns = [
     path("check_user/",views.check_get_user),
     path("login/", views.login_user),
     path("create/",views.create_task),
-    path("get_data/",views.get_tasks)
+    path("get_data/",views.get_tasks),
+    path('delete/<int:pk>',views.delete_task),
+    path('update/<int:pk>',views.update_task)
 ]

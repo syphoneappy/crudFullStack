@@ -21,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
     
 
 class TaskSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), required=False)
     class Meta:
         model = tasks
-        fields = ["user", "name", "description", "due_date", "status"]
+        fields = ["id","user", "name", "description", "due_date", "status"]

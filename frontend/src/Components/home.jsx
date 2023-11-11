@@ -129,6 +129,8 @@ const Home = () => {
         console.log(response);
         if (response.data.access_token !== null && response.status === 200){
           localStorage.setItem('Token',response.data.access_token);
+          localStorage.setItem("first",response.data.first_name);
+          localStorage.setItem("last",response.data.last_name)
           history('/tasks');
         }}
       ).catch((error) => {

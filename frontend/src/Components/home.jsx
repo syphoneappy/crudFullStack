@@ -5,13 +5,20 @@ import groovyWalkAnimation from "./lottieAnimation1.json";
 import {BsFillArrowLeftCircleFill} from 'react-icons/bs'
 import {BsFillArrowRightCircleFill} from 'react-icons/bs'
 import {AiFillCloseCircle} from 'react-icons/ai'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 const Home = () => {
+    const history = useNavigate();
     const [change,SetChange] = useState()
     const [validPassword, setValidPassword] = useState(true);
     const [validEmail, setValidEmail] = useState(true)
     const [step, setStep] = useState(1);
     const [EmailAvailiblity, setEmailAvailiblity] = useState(false)
     const [UsernameAvailibility, setUsernameAvailibility] = useState(false)
+    const [MyMessage, SetMyMessage] = useState({});
+    const [user,SetUser] = useState()
+    const [password, SetPassword] = useState()
+
     const uniqueId = (name) => `inline-${name}`;
 
     const validatePassword = (password) => {
@@ -36,6 +43,7 @@ const Home = () => {
     
 
     useEffect(() => {
+      console.log(MyMessage);
       if (formData.email && validEmail) {
         checkEmailAvailability(formData.email);
         checkUserAvailability(formData.username);
@@ -75,7 +83,59 @@ const Home = () => {
 
     const handleSubmit = () => {
       console.log(formData);
+
+      const fullName = formData.fullName;
+      const spaceIndex = fullName.indexOf(' ')
+
+      let firstName, lastName;
+
+      if (spaceIndex !== -1){
+        firstName = fullName.substring(0 , spaceIndex);
+        lastName = fullName.substring(spaceIndex + 1)
+      }
+      else{
+        firstName = fullName;
+        lastName = '';
+      }
+      axios.post("http://127.0.0.1:8000/register/", {
+          "username": formData.username,
+          "email": formData.email,
+          "password": formData.password,
+          "first_name": firstName,
+          "last_name": lastName,
+          "is_subscribed": formData.subscribe
+        })
+          .then((response) => {
+            if (response.status === 201){
+              SetChange(true)
+              SetMyMessage(true);  
+            }
+            console.log(response.status);
+          })
+          .catch((error) => {
+            console.error('Error during registration:', error.response);
+              SetMyMessage({ error: 'An error occurred during registration. Please check the details and try again.' });
+          
+            
+        });
+
     };
+
+    const handlelogin = () => {
+      axios.post("http://127.0.0.1:8000/login/",{
+        "username":user,
+        "password":password
+      }).then((response) => {
+        console.log(response);
+        if (response.data.token !== null || response.status === 200){
+          localStorage.setItem('Token',response.data.token);
+          history('/tasks');
+        }}
+      ).catch((error) => {
+        console.error('Error during login:', error.response);
+        SetMyMessage({error:"The Username or password is incorrect!"})
+      })
+    }
   
     const formVariants = {
         hidden: { x: '-100%' }, 
@@ -168,11 +228,17 @@ const Home = () => {
     {change ? (
 
            <>
+
                       <div className="mb-6">
-              <label className="block text-gray-500 font-bold mb-1 pr-4" htmlFor="inline-User">
+              <label htmlFor="" className='block text-gray-500 font-bold mb-1 pr-4'>
+              {MyMessage.success && (
+  <p className="text-green-500">Register Sucess Now Login</p>
+)}
+              </label>
+              <label className="block text-gray-500 font-bold mb-1 pr-4" htmlFor={uniqueId(`user`)}>
                 User
               </label>
-              <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id={uniqueId("User")} type="text" placeholder="Jane Doe" />
+              <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id={uniqueId("User")} type="text" placeholder="username and email" onChange={(e) => SetUser(e.target.value)} />
             </div>
    
        
@@ -180,17 +246,21 @@ const Home = () => {
               <label className="block text-gray-500 font-bold mb-1 pr-4" htmlFor="inline-password">
                 Password
               </label>
-              <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-password" type="password" placeholder="******************" />
+              <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-password" type="password" placeholder="******************" onChange={(e) => SetPassword(e.target.value)}/>
             </div>
             <div className="mb-6">
               <label className="block text-gray-500 font-bold">
                 <span className="text-sm text-red-400 hover:text-red-500 hover:scale-110 hover:duration-300">
                   <a href="">Forget Password</a>
+                  {MyMessage.error && (
+              <p className="text-red-500">{MyMessage.error}</p>
+              )}
                 </span>
               </label>
+             
             </div>
             <div>
-              <button className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button">
+              <button className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" onClick={handlelogin}>
                 Sign In
               </button>
             </div>
@@ -277,7 +347,7 @@ const Home = () => {
       {step === 2 && (
         <>
           <div className="mb-6">
-            <label className="block text-gray-500 font-bold mb-1 pr-4" htmlFor="inline-Username">
+            <label className="block text-gray-500 font-bold mb-1 pr-4" htmlFor={uniqueId("Username")}>
               Username
             </label>
             <input
@@ -332,7 +402,11 @@ const Home = () => {
         >
           Sign Up
         </button>
-        
+
+
+{MyMessage.error && (
+  <p className="text-red-500">{MyMessage.error}</p>
+)}
         </>
       
       )}

@@ -1,7 +1,9 @@
 import React from 'react'
 import { useState} from "react";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 const Dashbord = () => {
+  const history = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleOpenModal = () => {
@@ -25,12 +27,34 @@ const Dashbord = () => {
           [name]: type === 'checkbox' ? checked : value,
         });
       };
-    
+      console.log(task.name, task.description);
       const handleSubmit = (e) => {
         e.preventDefault();
-      
-        axios.post()
+        
+        console.log("reached here");
+        const token = localStorage.getItem("Token")
+        console.log("the token is:", token);
+        axios.post("http://localhost:8000/create/", {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          "name": task.name,
+          "description": task.description,
+          "due_date": task.dueDate,
+          "status": task.status
+        }).then(response => {
+            console.log(response.data);
+          }).catch(error => {
+            console.error("Error:", error);
+          });
       };
+
+      const logoutMe = () => {
+        localStorage.removeItem('Token');
+        history("/")
+      }
+
   return (
     <>
     <div className="bg-blue-500 p-4 flex justify-between items-center">
@@ -45,7 +69,7 @@ const Dashbord = () => {
   </div>
 
 
-  <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
+  <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600" onClick={logoutMe}>
     Logout
   </button>
 </div>

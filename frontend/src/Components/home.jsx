@@ -127,8 +127,8 @@ const Home = () => {
         "password":password
       }).then((response) => {
         console.log(response);
-        if (response.data.token !== null || response.status === 200){
-          localStorage.setItem('Token',response.data.token);
+        if (response.data.access_token !== null && response.status === 200){
+          localStorage.setItem('Token',response.data.access_token);
           history('/tasks');
         }}
       ).catch((error) => {

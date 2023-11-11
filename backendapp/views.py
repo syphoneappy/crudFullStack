@@ -42,6 +42,7 @@ def check_get_user(request):
 
     return Response({'isAvailable':user_exits})
 
+store_token = []
 @api_view(["POST", "GET"])
 def login_user(request):
     if request.method == "POST":
@@ -55,11 +56,11 @@ def login_user(request):
 
             access_token = AccessToken.for_user(user)
             refresh_token = RefreshToken.for_user(user)
+            store_token.append(str(refresh_token))
             return Response(    
                 {
                     "success": "Login successful",
                     "access_token": str(access_token),
-                    "refresh_token": str(refresh_token),
                 },
                 status=status.HTTP_200_OK,
             )
@@ -78,9 +79,8 @@ def login_user(request):
     
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def create_task(request):   
+def create_task(request):
     request.data["user"] = request.user.id
-
     serializer = TaskSerializer(data=request.data)
 
     if serializer.is_valid():
@@ -95,4 +95,9 @@ def create_task(request):
 def get_tasks(request):
     task = tasks.objects.filter(user=request.user)
     serializer = TaskSerializer(task, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data)    
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def delete_task(request, pk):
+    pass

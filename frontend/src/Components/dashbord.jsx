@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react'
 import { useState} from "react";
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {TiTick} from "react-icons/ti"
 import {RxCross2} from "react-icons/rx"
 import {HiOutlinePencilSquare} from "react-icons/hi2"
 import {RiDeleteBin4Fill} from "react-icons/ri"
+import Api from './Api';
 const Dashbord = () => {
   const history = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,7 +39,7 @@ const Dashbord = () => {
 
       useEffect(() => {
         setIsLoading(true); 
-        axios.get("http://127.0.0.1:8000/get_data/", {
+          Api.get("/get_data/", {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("Token")}`
@@ -74,8 +74,8 @@ const Dashbord = () => {
           setIsLoading(true);
       
           const token = localStorage.getItem("Token");
-          const response = await axios.post(
-            "http://127.0.0.1:8000/create/",
+          const response = await Api.post(
+            "/create/",
             {
               name: task.name,
               description: task.description,
@@ -130,8 +130,8 @@ const Dashbord = () => {
           setIsLoading(true);
           const token = localStorage.getItem("Token");
       
-          const response = await axios.put(
-            `http://127.0.0.1:8000/update/${currentTask.id}`,
+          const response = await Api.put(
+            `/update/${currentTask.id}`,
             {
               name: editTask.name,
               description: editTask.description,
@@ -164,7 +164,7 @@ const Dashbord = () => {
       const handleDelete = async (taskId) => {
         try {
           const token = localStorage.getItem("Token");
-          await axios.delete(`http://127.0.0.1:8000/delete/${taskId}`, {
+          await Api.delete(`/delete/${taskId}`, {
             headers: {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`,

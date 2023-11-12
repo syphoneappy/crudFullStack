@@ -5,7 +5,7 @@ import groovyWalkAnimation from "./lottieAnimation1.json";
 import {BsFillArrowLeftCircleFill} from 'react-icons/bs'
 import {BsFillArrowRightCircleFill} from 'react-icons/bs'
 import {AiFillCloseCircle} from 'react-icons/ai'
-import axios from 'axios'
+import Api from './Api';
 import { useNavigate } from 'react-router-dom';
 const Home = () => {
     const history = useNavigate();
@@ -97,7 +97,7 @@ const Home = () => {
         firstName = fullName;
         lastName = '';
       }
-      axios.post("http://127.0.0.1:8000/register/", {
+      Api.post("/register/", {
           "username": formData.username,
           "email": formData.email,
           "password": formData.password,
@@ -122,7 +122,7 @@ const Home = () => {
     };
 
     const handlelogin = () => {
-      axios.post("http://127.0.0.1:8000/login/",{
+      Api.post("/login/",{
         "username":user,
         "password":password
       }).then((response) => {
@@ -191,7 +191,7 @@ const Home = () => {
           playsInline
           className="fixed inset-0 h-full w-full object-cover z-0"
         >
-          <source src="./background.mp4" type="video/mp4" />
+          <source src="https://handloomss3bucket.s3.amazonaws.com/media/background.mp4" type="video/mp4" />
         </video>
         {change && (
           <div

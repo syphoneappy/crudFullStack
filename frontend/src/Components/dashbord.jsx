@@ -364,17 +364,17 @@ const Dashbord = () => {
         </div>
       )}
 
-  <h2 class="text-2xl font-semibold mb-4">Task Table</h2>
+  <h2 className="text-2xl font-semibold mb-4">Task Table</h2>
 
 
-  <table class="min-w-full bg-white border border-gray-300 mb-3">
+  <table className="min-w-full bg-white border border-gray-300 mb-3">
     <thead>
       <tr>
-        <th class="py-2 px-4 border-b">Title</th>
-        <th class="py-2 px-4 border-b">Description</th>
-        <th class="py-2 px-4 border-b">Date</th>
-        <th class="py-2 px-4 border-b">Status</th>
-        <th class="py-2 px-4 border-b">Actions</th>
+        <th className="py-2 px-4 border-b">Title</th>
+        <th className="py-2 px-4 border-b">Description</th>
+        <th className="py-2 px-4 border-b">Date</th>
+        <th className="py-2 px-4 border-b">Status</th>
+        <th className="py-2 px-4 border-b">Actions</th>
       </tr>
     </thead>
     {isLoading ? (
@@ -383,11 +383,11 @@ const Dashbord = () => {
   <tbody>
   {taskData.map((value, index) => (
         <tr key={value.id}>
-        <td class="py-2 px-4 border-b">{value.name}</td>
-        <td class="py-2 px-4 border-b max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap">{value.description}</td>
-        <td class="py-2 px-4 border-b">{value.due_date}</td>
-        <td class="py-2 px-4 border-b">{value.status ? (<><p className='text-green-500'><TiTick /></p></>) : (<> <p className='text-red-500'><RxCross2 /></p></>)}</td>
-        <td class="py-2 px-4 border-b">
+        <td className="py-2 px-4 border-b">{value.name}</td>
+        <td className="py-2 px-4 border-b max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap">{value.description}</td>
+        <td className="py-2 px-4 border-b">{value.due_date}</td>
+        <td className="py-2 px-4 border-b">{value.status ? (<><p className='text-green-500'><TiTick /></p></>) : (<> <p className='text-red-500'><RxCross2 /></p></>)}</td>
+        <td className="py-2 px-4 border-b">
         <button
                       className="text-blue-500 hover:underline mr-2"
                       onClick={() => handleEdit(value)}
@@ -396,7 +396,7 @@ const Dashbord = () => {
                         {<HiOutlinePencilSquare />}
                       </p>
                     </button>
-          <button class="text-red-800 hover:underline" onClick={() => handleDelete(value.id)}><p className='text-red-500'>{<RiDeleteBin4Fill />}</p></button>
+          <button className="text-red-800 hover:underline" onClick={() => handleDelete(value.id)}><p className='text-red-500'>{<RiDeleteBin4Fill />}</p></button>
         </td>
       </tr>
 ))}

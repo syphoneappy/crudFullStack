@@ -12,5 +12,6 @@ urlpatterns = [
     path('delete/<int:pk>',views.delete_task),
     path('update/<int:pk>',views.update_task),
     path('check_access_token/',views.check_token_validity),
-    path('token/', views.refresh_access_token)
+    path('token/', views.refresh_access_token),
+    path('get-data-search/',views.get_tasks_search)
 ]

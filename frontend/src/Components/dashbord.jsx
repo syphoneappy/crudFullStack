@@ -18,11 +18,28 @@ const Dashbord = () => {
     const [currentTask, setCurrentTask] = useState(null);
     const [isUpdateModalOpen, SetisUpdateModalOpen] = useState(false)
     const [loadingMap, setLoadingMap] = useState({});
-
+    const [searchQuery, setSearchQuery] = useState('');
+    const [taskDataz  , setTaskData] = useState([]);
     const handleOpenModal = () => {
       setIsModalOpen(true);
     };
 
+    const handleSearch = async () => {
+      console.log("Search Query:", searchQuery);
+    
+      await Api.get(`/get-data-search/?search=${searchQuery}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('Token')}`,
+        },
+      })
+        .then((response) => {
+          console.log("Search Response:", response.data);
+          setTaskData(response.data);
+        })
+        .catch((error) => console.error('Error:', error));
+    };
+    
     const handleUpdateModal = () => {
       SetisUpdateModalOpen(true)
     }
@@ -213,6 +230,42 @@ const Dashbord = () => {
 
   
 <h3 className='text-center text-4xl mt-2'>Task Manager</h3>
+
+<div className="mb-6 flex items-center">
+  <label htmlFor="search" className="block text-black font-medium mr-2">
+    Search
+  </label>
+  <div className="relative">
+    <input
+      type="text"
+      id="search"
+      name="search"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md bg-white text-black"
+    />
+    <button
+      type="button"
+      onClick={handleSearch}
+      className="absolute inset-y-0 right-0 px-4 py-2 bg-purple-600 text-white rounded-md"
+    >
+      Search
+    </button>
+  </div>
+</div>
+
+<tbody>
+        {taskDataz.map((value, index) => (
+            <tr key={value.id}>
+        <th className="py-2 px-4 border-b">{value.name}</th>
+        <th className="py-2 px-4 border-b">{value.description}</th>
+        <th className="py-2 px-4 border-b">{value.dueDate}</th>
+        <th className="py-2 px-4 border-b">{value.status}</th>
+            </tr>
+        ))}
+    </tbody>
+
+
 <button onClick={handleOpenModal} className="custom-button bg-purple-600 text-white font-medium py-2 px-4 rounded-md hover:bg-purple-700">
         Add Task
       </button>

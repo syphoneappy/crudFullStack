@@ -7,6 +7,9 @@ from .serializer import UserSerializer, TaskSerializer
 from django.contrib.auth import authenticate, login
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
+
+
 @api_view(["POST"])
 def create_user(request):
     serializer = UserSerializer(data=request.data)
@@ -149,10 +152,18 @@ def refresh_access_token(request):
 
     try:
         expired_access_token = AccessToken(expired_access_token_str)
-        user = access_token_mapping.get(expired_access_token_str)  # Retrieve the user based on the expired access token
-        refresh_token = user.refresh_token  # Retrieve the refresh token for the user (you need to adapt this based on your user model)
+        user = access_token_mapping.get(expired_access_token_str) 
+        refresh_token = user.refresh_token  
         new_access_token = AccessToken.for_user(user)
     except Exception as e:
         return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({"access_token": str(new_access_token)}, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_tasks_search(request):
+    search_query = request.GET.get("search", "")
+    tasks_result = tasks.objects.filter(Q(name__icontains=search_query) & Q(user=request.user))
+    serializer = TaskSerializer(tasks_result, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

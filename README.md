@@ -4,6 +4,43 @@
 
 Welcome to the **CRUD APPLICATION**. This API provides user management and task tracking functionality, allowing you to seamlessly integrate these features into application. this project is build on the django rest framework and react.
 
+
+## Installation guide 
+
+Brief description or introduction of your project.
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Endpoint](#Endpoint)
+
+## Prerequisites
+
+- Docker installed on your machine.
+
+## Installation
+
+1. **Clone the Repository:**
+   ```bash
+  [ git clone https://github.com/your-username/your-project.git](https://github.com/syphoneappy/crudFullStack.git)
+  
+   cd crudFullStack
+
+   docker-compose up --build
+
+## localinstallation 
+
+1. **Clone the Repository:**
+   ```bash
+  [ git clone https://github.com/your-username/your-project.git](https://github.com/syphoneappy/crudFullStack.git)
+
+- cd crudFullStack
+- pipenv shell
+- pipenv run pip install -r requirements.txt
+- gunicorn 'backendproj.wsgi' --bind=0.0.0.0:8000
+
+
 ## Endpoints
 
 ### 1. Create User

@@ -160,7 +160,7 @@ const Home = () => {
     
       const checkEmailAvailability = async (email) => {
         try {
-          const response = await fetch(`http://127.0.0.1:8000/check_email/?email=${email}`);
+          const response = await fetch(`https://sea-lion-app-5eziv.ondigitalocean.app/check_email/?email=${email}`);
 
           const data = await response.json();
 
@@ -176,7 +176,7 @@ const Home = () => {
       };
       const checkUserAvailability = async (username) => {
         try{
-          const response = await fetch(`http://127.0.0.1:8000/check_user/?user=${username}`)
+          const response = await fetch(`https://sea-lion-app-5eziv.ondigitalocean.app/check_user/?user=${username}`)
     
           const data = await response.json();
        
@@ -635,13 +635,13 @@ onClick={handlePrevStep}
 Previous
 </button>
 <button
-className={`shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded ${ UsernameAvailibility || !formData.username? 'opacity-50 cursor-not-allowed' : ''}`}
-type="button"
-disabled={ UsernameAvailibility || !formData.username}
-onClick={handleSubmit}
->
-Sign Up
-</button>
+         className={`shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded ${UsernameAvailibility || !formData.username ? 'opacity-50 cursor-not-allowed' : '' || loading ? 'bg-gray-500 cursor-not-allowed ' : 'bg-purple-500 hover:bg-purple-400'}`}
+          type="button"
+          disabled={loading || UsernameAvailibility || !formData.username}
+          onClick={handleSubmit}
+        >
+          {loading ? 'Loading...' : 'Sign Up'}
+        </button>
 
 
 {MyMessage.error && (

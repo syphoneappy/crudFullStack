@@ -9,6 +9,7 @@ import Api from './Api';
 const Dashbord = () => {
   const history = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [taskData , setTaskdata] = useState([])
     const [keyForRerender, setKeyForRerender] = useState(0);
@@ -16,6 +17,7 @@ const Dashbord = () => {
     const last = localStorage.getItem("last")
     const [currentTask, setCurrentTask] = useState(null);
     const [isUpdateModalOpen, SetisUpdateModalOpen] = useState(false)
+    const [loadingMap, setLoadingMap] = useState({});
 
     const handleOpenModal = () => {
       setIsModalOpen(true);
@@ -46,7 +48,7 @@ const Dashbord = () => {
           }
         }).then((response) => {
           setTaskdata(response.data);
-          console.log(response.data);
+  
           setIsLoading(false); 
         });
       }, [keyForRerender]);
@@ -57,7 +59,7 @@ const Dashbord = () => {
           [name]: type === 'checkbox' ? checked : value,
         });
       };
-      console.log(task.name, task.description);
+    
 
       const handleChange2 = (e) => {
         const { name, value, type, checked } = e.target;
@@ -68,6 +70,7 @@ const Dashbord = () => {
       };
       
       const handleSubmit = async (e) => {
+        setLoading(true)
         e.preventDefault();
       
         try {
@@ -99,6 +102,7 @@ const Dashbord = () => {
           setTimeout(() => {
             setIsLoading(false);
           }, 1000);
+          setLoading(false)
         }
       };
     
@@ -125,7 +129,7 @@ const Dashbord = () => {
 
       const handleUpdate = async (e) => {
         e.preventDefault(); 
-      
+        setLoading(true)
         try {
           setIsLoading(true);
           const token = localStorage.getItem("Token");
@@ -157,11 +161,13 @@ const Dashbord = () => {
           console.error("Error:", error);
         } finally {
           setIsLoading(false);
+          setLoading(false)
         }
       };
       
 
       const handleDelete = async (taskId) => {
+        setLoadingMap((prevLoadingMap) => ({ ...prevLoadingMap, [taskId]: true }));
         try {
           const token = localStorage.getItem("Token");
           await Api.delete(`/delete/${taskId}`, {
@@ -174,6 +180,8 @@ const Dashbord = () => {
           setTaskdata((prevTasks) => prevTasks.filter(task => task.id !== taskId));
         } catch (error) {
           console.error("Error:", error);
+        } finally {
+          setLoadingMap((prevLoadingMap) => ({ ...prevLoadingMap, [taskId]: false }));
         }
       };
 
@@ -273,9 +281,9 @@ const Dashbord = () => {
         <div className="mb-2 text-center">
         <button
   type="submit"
-  className="custom-button bg-purple-600 text-white font-medium py-2 px-4 rounded-md hover:bg-purple-700"
+  className={`custom-button ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'} text-white font-medium py-2 px-4 rounded-md`}
 >
-  Add Task
+{loading ? 'Loading...' : 'Add Task'}
 </button>
 
         </div>
@@ -396,7 +404,16 @@ const Dashbord = () => {
                         {<HiOutlinePencilSquare />}
                       </p>
                     </button>
-          <button className="text-red-800 hover:underline" onClick={() => handleDelete(value.id)}><p className='text-red-500'>{<RiDeleteBin4Fill />}</p></button>
+                    <button className="text-red-800 hover:underline relative" onClick={() => handleDelete(value.id)}>
+  {loadingMap[value.id] && (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-blue-500 border-b-2 border-gray-500"></div>
+    </div>
+  )}
+  <p className={`text-red-500 ${loadingMap[value.id] ? 'invisible' : 'visible'}`}>
+    {<RiDeleteBin4Fill />}
+  </p>
+</button>
         </td>
       </tr>
 ))}

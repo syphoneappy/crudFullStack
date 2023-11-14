@@ -10,5 +10,7 @@ urlpatterns = [
     path("create/",views.create_task),
     path("get_data/",views.get_tasks),
     path('delete/<int:pk>',views.delete_task),
-    path('update/<int:pk>',views.update_task)
+    path('update/<int:pk>',views.update_task),
+    path('check_access_token/',views.check_token_validity),
+    path('token/', views.refresh_access_token)
 ]

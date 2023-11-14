@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework import status
 from .models import CustomUser, tasks
 from .serializer import UserSerializer, TaskSerializer
@@ -56,7 +57,8 @@ def login_user(request):
 
             access_token = AccessToken.for_user(user)
             refresh_token = RefreshToken.for_user(user)
-            store_token.append(str(refresh_token))
+            user.refresh_token = str(refresh_token)
+            user.save()
 
             first_name = user.first_name
             last_name = user.last_name
@@ -130,4 +132,27 @@ def update_task(request, pk):
         print(serializer.errors)
         return Response({"error": "Invalid data provided"}, status=status.HTTP_400_BAD_REQUEST)
 
-    
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def check_token_validity(request):
+    return Response({"detail": "Access token is valid"}, status=status.HTTP_200_OK)
+
+access_token_mapping = {}
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def refresh_access_token(request):
+    expired_access_token_str = request.data.get("expired_access_token")
+
+    if not expired_access_token_str:
+        return Response({"detail": "Expired access token not provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        expired_access_token = AccessToken(expired_access_token_str)
+        user = access_token_mapping.get(expired_access_token_str)  # Retrieve the user based on the expired access token
+        refresh_token = user.refresh_token  # Retrieve the refresh token for the user (you need to adapt this based on your user model)
+        new_access_token = AccessToken.for_user(user)
+    except Exception as e:
+        return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({"access_token": str(new_access_token)}, status=status.HTTP_200_OK)
